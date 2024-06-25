@@ -8,6 +8,10 @@ const tilemap = Constants.TILEMAP;
 const gameMap = new Image();
 gameMap.src = "sprites/maps/open-space.png";
 
+const glockSpawn = new Image();
+glockSpawn.src = "sprites/weapon-spawns/glock-spawn.png"; // Path to your image
+
+
 let tiles = {};
 
 function drawMap() {
@@ -18,13 +22,25 @@ function drawMap() {
   const startX = Math.max(0, Math.floor(camera.x / (tileSize * scaleFactor)));
   const startY = Math.max(0, Math.floor(camera.y / (tileSize * scaleFactor)));
 
-  const endX = Math.min(mapWidth, startX + Math.ceil(canvas.width / (tileSize * scaleFactor)) + 1);
-  const endY = Math.min(mapHeight, startY + Math.ceil(canvas.height / (tileSize * scaleFactor)) + 1);
+  const endX = Math.min(
+    mapWidth,
+    startX + Math.ceil(canvas.width / (tileSize * scaleFactor)) + 1
+  );
+  const endY = Math.min(
+    mapHeight,
+    startY + Math.ceil(canvas.height / (tileSize * scaleFactor)) + 1
+  );
 
   for (let y = startY; y < endY; y++) {
     for (let x = startX; x < endX; x++) {
       const tile = tilemap[y * mapWidth + x];
-      ctx.drawImage(tiles[tile], x * tileSize, y * tileSize, tileSize * scaleFactor, tileSize * scaleFactor);
+      ctx.drawImage(
+        tiles[tile],
+        x * tileSize,
+        y * tileSize,
+        tileSize * scaleFactor,
+        tileSize * scaleFactor
+      );
     }
   }
 }
@@ -39,9 +55,9 @@ function drawHealthBar() {
   ctx.save();
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   playerManager.mainPlayer.healthbarHeart.draw(ctx);
-  ctx.fillStyle = 'red';
+  ctx.fillStyle = "red";
   ctx.fillRect(x, y, health, height);
-  ctx.fillStyle = 'black';
+  ctx.fillStyle = "black";
   ctx.fillRect(health + x, y, width - health, height);
   ctx.restore();
 }
@@ -62,6 +78,10 @@ function draw() {
 
   drawMap();
   drawHUD();
+
+  if (glockSpawn.complete) {
+    ctx.drawImage(glockSpawn, 150, 950);
+  }
 
   playerManager.drawPlayers(ctx);
 }
@@ -85,14 +105,17 @@ function loadTiles() {
 
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
-document.addEventListener("blur", onBlurHandler)
+document.addEventListener("blur", onBlurHandler);
 canvas.addEventListener("mousemove", mouseMoveHandler, false);
-canvas.addEventListener("mousedown", onMouseDown);
-canvas.addEventListener("mouseup", onMouseUp);
+canvas.addEventListener("mousedown", onMouseDown, false);
+canvas.addEventListener("mouseup", onMouseUp, false);
 
 const observer = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
-    if (mutation.attributeName === "width" || mutation.attributeName === "height") {
+    if (
+      mutation.attributeName === "width" ||
+      mutation.attributeName === "height"
+    ) {
       scaleFactor = Math.min(canvas.width / 800, canvas.height / 600);
     }
   });

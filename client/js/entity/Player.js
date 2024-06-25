@@ -10,7 +10,7 @@ class Player {
     this.previousPosition = { x: -1, y: -1, rotation: -1 };
 
     this.body = new GameObjectBuilder()
-      .withSpritesheetName("glock-stance")
+      .withSpritesheetName("ak-idle")
       .withX(x)
       .withY(y)
       .build();
@@ -53,12 +53,14 @@ class Player {
           this.healthbarHeart.swapSpritesheet("heartbeat-healthy");
           this.respawn();
         }
-      } else if (animationName === "glock-shoot") {
+      } else if (
+        Boolean(animationName.includes('-shoot'))
+      ) {
         this.canShoot = true;
       }
 
       this.body.resetAnimation();
-    })
+    });
 
     this.legs.addEventListener("animationcomplete", () => {
       this.canMove = true;
@@ -79,7 +81,10 @@ class Player {
     const playerPos = data.playerPos;
     const rotation = this.body.rotation;
     const transformedPoint = Physics.calculateTransformedPoint(
-      playerPos.x, playerPos.y, this.body.spritesheetData.spriteCenter, rotation
+      playerPos.x,
+      playerPos.y,
+      this.body.spritesheetData.spriteCenter,
+      rotation
     );
     const playerX = transformedPoint.x;
     const playerY = transformedPoint.y;
@@ -87,23 +92,33 @@ class Player {
 
     const hitboxRegion = {
       topLeft: {
-        x: playerX + hitboxOffsets.topLeft.x, y: playerY + hitboxOffsets.topLeft.y
+        x: playerX + hitboxOffsets.topLeft.x,
+        y: playerY + hitboxOffsets.topLeft.y,
       },
       topRight: {
-        x: playerX + hitboxOffsets.topRight.x, y: playerY + hitboxOffsets.topRight.y
+        x: playerX + hitboxOffsets.topRight.x,
+        y: playerY + hitboxOffsets.topRight.y,
       },
       bottomLeft: {
-        x: playerX + hitboxOffsets.bottomLeft.x, y: playerY + hitboxOffsets.bottomLeft.y
+        x: playerX + hitboxOffsets.bottomLeft.x,
+        y: playerY + hitboxOffsets.bottomLeft.y,
       },
       bottomRight: {
-        x: playerX + hitboxOffsets.bottomRight.x, y: playerY + hitboxOffsets.bottomRight.y
-      }
+        x: playerX + hitboxOffsets.bottomRight.x,
+        y: playerY + hitboxOffsets.bottomRight.y,
+      },
     };
 
     // Transform the coordinates to account for rotation
     for (const coordinate in hitboxRegion) {
       const expectedPoint = hitboxRegion[coordinate];
-      const xyTest = Physics.rotatePoint(playerX, playerY, expectedPoint.x, expectedPoint.y, rotation);
+      const xyTest = Physics.rotatePoint(
+        playerX,
+        playerY,
+        expectedPoint.x,
+        expectedPoint.y,
+        rotation
+      );
 
       hitboxRegion[coordinate].x = xyTest.x;
       hitboxRegion[coordinate].y = xyTest.y;
@@ -114,11 +129,31 @@ class Player {
       const otherPlayer = otherPlayers[playerId];
       if (otherPlayer.isMainPlayer) continue;
       if (otherPlayer.isRespawning) continue;
-      if (Physics.checkForObstacles(playerPos, otherPlayer.getPosition())) continue;
-      if (Physics.isCircleCollidingRect(otherPlayer.getPosition(), hitboxRegion)) {
+      if (Physics.checkForObstacles(playerPos, otherPlayer.getPosition()))
+        continue;
+      if (
+        Physics.isCircleCollidingRect(otherPlayer.getPosition(), hitboxRegion)
+      ) {
         socketManager.emit("playerHit", { playerId: playerId });
       }
     }
+  }
+
+  checkCollisionWithImage(imageRect) {
+    // Assuming the player's position is the center of the sprite and the sprite is about 50x50 pixels
+    const playerRect = {
+      x: this.body.x - 25, // half width
+      y: this.body.y - 25, // half height
+      width: 50,
+      height: 50,
+    };
+
+    return (
+      playerRect.x < imageRect.x + imageRect.width &&
+      playerRect.x + playerRect.width > imageRect.x &&
+      playerRect.y < imageRect.y + imageRect.height &&
+      playerRect.y + playerRect.height > imageRect.y
+    );
   }
 
   setPosition(x, y, rotation) {
@@ -132,14 +167,16 @@ class Player {
     return {
       x: this.body.x,
       y: this.body.y,
-      rotation: this.body.rotation
-    }
+      rotation: this.body.rotation,
+    };
   }
 
   isPositionChanged(currentPosition) {
-    return currentPosition.x !== this.previousPosition.x
-      || currentPosition.y !== this.previousPosition.y
-      || currentPosition.rotation !== this.previousPosition.rotation;
+    return (
+      currentPosition.x !== this.previousPosition.x ||
+      currentPosition.y !== this.previousPosition.y ||
+      currentPosition.rotation !== this.previousPosition.rotation
+    );
   }
 
   playWalkingAnim(legRotation = 0) {
@@ -192,7 +229,15 @@ class Player {
       socketManager.emit("playedShoot");
     }
 
-    this.body.swapSpritesheet("glock-shoot", 1);
+    const equippedWeapons = this.body.spritesheetData.spritesheetName;
+
+    console.log("equipped", equippedWeapons);
+
+    console.log(equippedWeapons.split("-"));
+
+    const shootWeapon = equippedWeapons.split("-")[0] + "-shoot";
+    console.log("shoot weapon", shootWeapon);
+    this.body.swapSpritesheet(shootWeapon, 1);
     this.canShoot = false;
   }
 
@@ -209,7 +254,9 @@ class Player {
   }
 
   respawn() {
-    const randomIndex = Math.floor(Math.random() * Constants.PLAYER_SPAWN_POINTS.length);
+    const randomIndex = Math.floor(
+      Math.random() * Constants.PLAYER_SPAWN_POINTS.length
+    );
     const { x, y } = Constants.PLAYER_SPAWN_POINTS[randomIndex];
 
     this.body.setPosition(x, y);
@@ -224,14 +271,62 @@ class Player {
     this.health -= 20;
 
     if (this.isMainPlayer) {
-      if (this.health >= 75 && this.healthbarHeart.spritesheetData.spritesheetName !== "heartbeat-healthy") {
+      if (
+        this.health >= 75 &&
+        this.healthbarHeart.spritesheetData.spritesheetName !==
+          "heartbeat-healthy"
+      ) {
         this.healthbarHeart.swapSpritesheet("heartbeat-healthy");
-      } else if (this.health > 20 && this.healthbarHeart.spritesheetData.spritesheetName !== "heartbeat-impacted") {
+      } else if (
+        this.health > 20 &&
+        this.healthbarHeart.spritesheetData.spritesheetName !==
+          "heartbeat-impacted"
+      ) {
         this.healthbarHeart.swapSpritesheet("heartbeat-impacted");
-      } else if (this.health <= 20 && this.healthbarHeart.spritesheetData.spritesheetName !== "heartbeat-critical") {
+      } else if (
+        this.health <= 20 &&
+        this.healthbarHeart.spritesheetData.spritesheetName !==
+          "heartbeat-critical"
+      ) {
         this.healthbarHeart.swapSpritesheet("heartbeat-critical");
       }
     }
+  }
+
+  handleImageCollision() {
+    console.log("IMAGE COLLISION");
+
+    // Store current position to maintain it
+    const currentX = this.body.x;
+    const currentY = this.body.y;
+
+    console.log("this body", this.body);
+
+    // Create the new body with the glock spritesheet, using the player's current position
+    this.body = new GameObjectBuilder()
+      .withSpritesheetName("glock-idle")
+      .withX(currentX)
+      .withY(currentY)
+      .build();
+
+    this.body.addEventListener("animationcomplete", (data) => {
+      const animationName = data.name;
+      if (animationName === "death") {
+        this.isRespawning = false;
+        this.canShoot = true;
+        this.canMove = true;
+        this.deathSoul.isVisible = false;
+        this.respawn();
+      } else if (animationName === "glock-shoot" || animationName === 'ak-shoot') {
+        // Assuming there's a glock-shoot animation
+        this.canShoot = true;
+      }
+      this.body.resetAnimation();
+    });
+
+    // Example of how to reapply ability to move and shoot
+    this.canMove = true;
+    this.canShoot = true;
   }
 
   update() {
@@ -242,6 +337,12 @@ class Player {
 
     if (this.isMainPlayer) {
       this.healthbarHeart.update();
+    }
+
+    const imageRect = { x: 150, y: 950, width: 50, height: 50 };
+
+    if (this.checkCollisionWithImage(imageRect)) {
+      this.handleImageCollision();
     }
 
     const currentPosition = this.getPosition();
