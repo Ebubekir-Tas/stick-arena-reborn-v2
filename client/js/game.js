@@ -88,6 +88,7 @@ document.addEventListener("keyup", keyUpHandler, false);
 document.addEventListener("blur", onBlurHandler)
 canvas.addEventListener("mousemove", mouseMoveHandler, false);
 canvas.addEventListener("mousedown", onMouseDown);
+canvas.addEventListener("mouseup", onMouseUp);
 
 const observer = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
