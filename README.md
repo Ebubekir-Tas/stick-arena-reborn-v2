@@ -1,7 +1,24 @@
-# v2
+## Stick Arena Reborn V2
+An HTML5 remake of the Flash game Stick Arena, the largest multiplayer Flash Game with over 100 million plays.
 
-# stick-arena-reborn
-A HTML5 remake of the Flash game Stick Arena
+Stick Arena was sunsetted by XGen Studios in 2022, and thus Stick Arena Reborn has been created as a spiritual successor to the now discontinued game.
+## Contribution
+
+To contribute to this open-source project, please create an issue in the Issues tab to discuss potential changes or report a problem. For code contributions, direct your pull requests to the 'dev' branch.
+
+## Changelog
+### April 2024
+
+* Add weapon spawn and equip functionality
+* Introduce new weapon, AK
+* Camera no longer goes out of the map's bounds, ridding of blank space and enabling the original "sniping" capabilities. 
+* Added Deadzone of 20 pixels so camera is not fixed to the center.
+* Holding left click or mousebar autofires
+
+### Next Planned Changes:
+
+* Animated weapon spawn
+* More weapons
 
 ## Demo
 
@@ -26,7 +43,8 @@ A HTML5 remake of the Flash game Stick Arena
   - [x] Camera follows the player
     - [x] Zoom in
 - [ ] Combat system
-  - [ ] Picking up weapons from the ground
+  - [x] Picking up weapons from the ground
+    - Needs a bit of improvement
   - [x] Collision detection
     - Needs a bit of improvement
   - [x] Hitpoints
@@ -34,7 +52,7 @@ A HTML5 remake of the Flash game Stick Arena
   - [ ] Weapon: Fists
   - [x] Weapon: Glock
   - [ ] Weapon: Bat
-  - [ ] Weapon: AK-47
+  - [x] Weapon: AK-47
   - [ ] Weapon: Shotgun
   - [ ] Weapon: Sledgehammer
   - [ ] Weapon: Katana
@@ -48,9 +66,6 @@ A HTML5 remake of the Flash game Stick Arena
   - [ ] Room creation
   - [ ] 5 minute timer for the room
   - [ ] Quick Play support
-    - This will likely mean that there needs to be support for unregistered users
-  - [ ] Player disconnections in the middle of a game
-    - Ideally there should be a system in place to discourage this from happening
 - [ ] Creds
 - [ ] Cosmetic: Spinners
 - [ ] Cosmetic: Pets
@@ -60,5 +75,9 @@ A HTML5 remake of the Flash game Stick Arena
 - [ ] Game mode: PvE / Zombies
 - [ ] Game mode: Wager matches
 
-## Copyright
-The assets used in this project belong to XGenStudios. This project is for educational purposes only.
+## Credits
+
+ Stick Arena Reborn was originally created by Wuggy. As he has discontinued development, he has given me permission to continue the project.
+
+![image](https://github.com/Ebubekir-Tas/stick-arena-reborn-v2/assets/65694925/cf495f3d-cfc9-4c78-8a42-afd8e1fbf183)
+
