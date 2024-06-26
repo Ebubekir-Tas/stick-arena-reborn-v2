@@ -80,7 +80,3 @@ To contribute to this open-source project, please create an issue in the Issues 
  Stick Arena Reborn was originally created by Wuggy. As he has discontinued development, he has given me permission to continue the project.
 
 ![image](https://github.com/Ebubekir-Tas/stick-arena-reborn-v2/assets/65694925/cf495f3d-cfc9-4c78-8a42-afd8e1fbf183)
-
-The original game made by XGen Studios
-
-![image](https://github.com/Ebubekir-Tas/stick-arena-reborn-v2/assets/65694925/1d670c8d-c741-4b9a-b441-dce5a87c1566)
